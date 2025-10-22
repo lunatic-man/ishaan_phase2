@@ -19,5 +19,7 @@ Writeups must include:
 - thought process and approach
 - every concept you learned and revised
 - any incorrect tangents you went on and why
+  
+Important note:
 - Should include textual outputs and screenshots for everything
 - Usage of LLMs is banned
