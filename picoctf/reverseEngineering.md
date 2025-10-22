@@ -82,7 +82,7 @@ I also found another way of solving the challenge by continuing to watch the ent
 - After installing it, I ran the program and it asked me to chose which file to disassemble. Giving it the file that we wanted to disassemble, I figured out the value stored in the `eax` register as shown in the image. 
 - Putting the data into an online hex to binary converter, I got the flag. 
 
-! (images/revEngg/Screenshot from 2025-10-22 23-57-18.png)
+!(images/revEngg/Screenshot from 2025-10-22 23-57-18.png)
 
 ## Flag 
 `picoCTF{549698}`
