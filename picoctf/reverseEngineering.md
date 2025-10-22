@@ -79,7 +79,10 @@ Disassembly of section .fini:
 I also found another way of solving the challenge by continuing to watch the entire YouTube video where I learned that we can also use the IDA debugger, decompiler to get the result of the full code. 
 
 - I first installed IDA which turned out to be a pain as I was not able to figure out what is a `.hexlic` file. Ended up wasting 15 mins on just finding out that file. 
-- After installing it, I ran the program and it asked me to chose which file to disassemble. Giving it the file that we wanted to disassemble, I figured out the value stored in the `eax` register as shown in the image. 
+- After installing it, I ran the program and it asked me to chose which file to disassemble. Giving it the file that we wanted to disassemble, I figured out the value stored in the `eax` register as shown in the image.
+
+![IDA Photo](/images/revEngg/Screenshot-2025-10-23-00-11-32.png)
+
 - Putting the data into an online hex to binary converter, I got the flag. 
 
 ![Hex to Binary](/images/revEngg/Screenshot-2025-10-22-23-57-18.png)
