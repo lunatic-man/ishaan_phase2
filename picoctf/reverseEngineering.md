@@ -211,4 +211,33 @@ main:
 - These registers are represented by `w0` or `x0` or `eax`. The first two notations are used to access different parts of register `0`. `w` is used to access the lower 32 bits, whereas `x` is used to access all 64 bits of a register. The `eax` is just another way of accessing the registers, however it points to a specific register, and `e` here denotes 32 bit architecture.
 - Now in these registers, we can store and manipulate data. To do this, we use mnemonic commands, like `str`, `ldr`, `add`, `sub`, etc.
 - These things together make up an assembly code. Coming back to the code that we got, this code starts at `func` as denoted by the line `.global func`. I do not know what other lines mean.
-- Now coming to `main` block as explained in video, we can see that we first use the `stp` command along with `x29` and `x30` registers. This instruction is a Store Pair instruction. It stores two registers to a location in memory. This location in memory is given by `[sp, -48]!`. What this does is it stores `x29` and `x30` registers in the address pointed to by `sp` register, at an offset of -48. 
+- Now coming to `main` block as explained in video, we can see that we first use the `stp` command along with `x29` and `x30` registers. This instruction is a Store Pair instruction. It stores two registers to a location in memory. This location in memory is given by `[sp, -48]!`. To understand this line, I had to go in depth and analyze what actually happens here. I spent about an hour learning about registers, stack, stack frame and all other things. It was quite interesting. So when an OS loads up, it creates space in RAM, called as Stack. This stack is a huge quantity of memory. The top of this Stack is denoted by a register, `sp` (Stack Pointer). This register holds the memory address of the top of the Stack.
+- Now when we call a function, we may need to store certain values which are already in register to the RAM as RAM can store it for longer duration and registers may get overwritten during execution. To do this, we save a type of a copy in the Stack. We create space, called as Stack Frame (Stack Frames are specific to a function and the choice of the designer), where we store these registers. To create a Stack Frame we use the command `sub sp, sp, #32`. What this command does is, is that it tells the system to reduce the value stored in the `sp` register, i.e., it 'slides' the pointer downwards to create space between the top of the stack and the stack pointer, which becomes the stack frame for the function. The example quotes slides down the `sp` by 32 bytes, creating space for exactly 32 x 8 bits. 
+- With that out of the way and its understanding, we can now move on to what is the actual logic and what is going on in the code. So reading the code and understanding it as it works, we can see that we first take the input and convert it to integer, then we call the `func` function. In this function, we first create a space of 32 bytes as our stack frame. Then in the function we had some instructions that were new to me, googling these functions I understood that these instructions first store the values in various 32 bit registers, and then manipulate these.
+- So in `func` going line by line, we see that first `w0` has value as 79 and then we store this register onto the stack frame to at sp + 12.
+- Continuing so on we get our stack frame ready. Now here `lsl` and `sdiv` were new instructions which refer to bitwise left shift operator and division operator respectively.
+- Following the algorithm, we get an equation which looks like { (79 << 7)/3 - x }. Here x becomes the input that we have gotten from the terminal.
+- Now according to challenge, we need to get the win condition. Reading the code and analyzing it further, we see the `cmp` and `bne` instructions. What these two do is that they test whether a condition is true or false, and if it is false, that is `cmp w0, 0` is false, it enters `bne .L4`, that is it calls `.L4` code. However we know that this is not the win condition. Hence we need to ensure `w0` becomes 0, meaning the equation above becomes 0. So this means that we have to get value of x such that above equation is zero. Solving this, I got the value of x as 3370. Putting this decimal in decimal to hex, I got the value as `D2A`. I did try putting the flag as `picoCTF{D2A}` but it failed so I re-read how we need to submit the flag and submitted it in the correct format with padded zeros.
+
+
+## Flag 
+
+`picoCTF{00000d2a}` 
+
+## Concepts Learned
+#### Stack and Stack Frame
+From this challenge, I learned about stack and stack frame and how we initialize a stack to create stack frame specific to a function, along with storing the data in the memory. 
+
+#### Assembly Language
+I learned how we can use low level language to directly interact with hardware and memory and utilize it to the best of our abilities. 
+
+## Notes
+In this challenge, I initially tried uploading the code to the IDA disassembler thinking that it would turn the assembly directly into C or some other program, but it gave an error. I then googled that there is also a Ghidra disassembler that decompiles directly into C type code. So will try that next time.
+
+## References 
+- https://play.picoctf.org/practice?category=3&page=1&search=ARMss
+- https://youtube.com/watch?v=1d-6Hv1c39c
+- https://youtube.com/watch?v=gh2RXE9BIN8
+- https://www.geeksforgeeks.org/computer-organization-architecture/what-is-assembly-language/
+---------------------------------------------------------------------------------------------------------------------------------
+# 
