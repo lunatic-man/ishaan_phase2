@@ -205,7 +205,7 @@ main:
 - Now I figured out that this is assembly code, but I was not able to understand what it means at all. So I went through the videos given in the PDF to understand what it is about, and I was still pretty confused.
 - I did learn a few things from the videos, mainly `main` is where our actual code is, `func` is just a function that we define and use and `bl` is how we call a function. I also learned that `atoi` is a function that converts the text we entered as ASCII into Int for calculations.
 - Drawing on experiences and lessons from the previous challenge, I knew that we had to learn how to manipulate registers. However I was not able to find the typical `eax` format in this code which I had in the previous code. So I went online and googled about the `w0` , `x1` etc, which I assumed were registers as the videos taught that much.
-![Image of Google Search of w0,w1,x0,x1]()
+![Image of Google Search of w0,w1,x0,x1](/images/revEngg/Screenshot-2025-10-23-21-54-45.png)
 - Now after understanding that these are also registers, I learned what are the commands here and what do they do. Learning the assembly code was one of the toughest things I have ever done, and I will be honest, I am still confused about it.
 - I will try my best to explain each line here based on my understanding. First of all, there is something called as registers which are fast storage units, but volatile, that we use to store data. Assembly teaches us how to manipulate the data in these.
 - These registers are represented by `w0` or `x0` or `eax`. The first two notations are used to access different parts of register `0`. `w` is used to access the lower 32 bits, whereas `x` is used to access all 64 bits of a register. The `eax` is just another way of accessing the registers, however it points to a specific register, and `e` here denotes 32 bit architecture.
@@ -303,13 +303,15 @@ class VaultDoor3 {
 ```
 - Now in this code, I also found the check password function in it. Here I had to go online and google why do we use `.` in the js code.
 
-![screenshot of google search of .]
+![screenshot of google search of .](/images/revEngg/Screenshot-2025-10-23-22-03-19.png)
+![Screenshot of google search of .](/images/revEngg/Screenshot-2025-10-23-22-03-33.png)
 
 - Learning that `.` is a fundamental operator in js, used for accessing either properties or for accessing the functions.
 - Using this I realised that the line ```if (vaultDoor.checkPassword(input)) {``` is just a way of calling the function, I moved on to understand the function.
 - In the function I realised that we first take a password that has to be 32 characters long, and then this password has to match the final string, the `s.equals(...)` part to ensure that we get the return value as 1 and hence access granted. I also learned that `charAt()` gives the character of the string at a particular specified index
 - I solved this on pen and paper as shown below:
-  ![image of pen and paper solve]
+  ![image of pen and paper solve](/images/revEngg/20251023_211314.jpg)
+  ![image1 of pen and paper solve](/images/revEngg/20251023_211320.jpg)
 - Solving this, I got the flag.
 
 ## Flag
