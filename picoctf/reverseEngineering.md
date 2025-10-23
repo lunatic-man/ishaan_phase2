@@ -240,4 +240,90 @@ In this challenge, I initially tried uploading the code to the IDA disassembler 
 - https://youtube.com/watch?v=gh2RXE9BIN8
 - https://www.geeksforgeeks.org/computer-organization-architecture/what-is-assembly-language/
 ---------------------------------------------------------------------------------------------------------------------------------
-# 
+# Vault Door 3 
+To solve this challenge, we need to create a password such that it meets the conditions set by the program. 
+
+## Solution 
+To solve this challenge, I followed the steps as listed below: 
+- I first read through the code to understand what it does. Despite having limited knowledge about js, I could understand that the main function has the code to take the input from the user, and from this input it selects the substring which starts with `picoCTF{`. This is shown as below
+
+```bash
+
+20:35:36 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → ls
+VaultDoor3.java
+20:35:37 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → file Vault*
+VaultDoor3.java: C++ source, ASCII text
+20:35:42 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → cat Vault*
+import java.util.*;
+
+class VaultDoor3 {
+    public static void main(String args[]) {
+        VaultDoor3 vaultDoor = new VaultDoor3();
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter vault password: ");
+        String userInput = scanner.next();
+	String input = userInput.substring("picoCTF{".length(),userInput.length()-1);
+	if (vaultDoor.checkPassword(input)) {
+	    System.out.println("Access granted.");
+	} else {
+	    System.out.println("Access denied!");
+        }
+    }
+
+    // Our security monitoring team has noticed some intrusions on some of the
+    // less secure doors. Dr. Evil has asked me specifically to build a stronger
+    // vault door to protect his Doomsday plans. I just *know* this door will
+    // keep all of those nosy agents out of our business. Mwa ha!
+    //
+    // -Minion #2671
+    public boolean checkPassword(String password) {
+        if (password.length() != 32) {
+            return false;
+        }
+        char[] buffer = new char[32];
+        int i;
+        for (i=0; i<8; i++) {
+            buffer[i] = password.charAt(i);
+        }
+        for (; i<16; i++) {
+            buffer[i] = password.charAt(23-i);
+        }
+        for (; i<32; i+=2) {
+            buffer[i] = password.charAt(46-i);
+        }
+        for (i=31; i>=17; i-=2) {
+            buffer[i] = password.charAt(i);
+        }
+        String s = new String(buffer);
+        return s.equals("jU5t_a_sna_3lpm12g94c_u_4_m7ra41");
+    }
+}
+20:35:46 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → 
+
+```
+- Now in this code, I also found the check password function in it. Here I had to go online and google why do we use `.` in the js code.
+
+![screenshot of google search of .]
+
+- Learning that `.` is a fundamental operator in js, used for accessing either properties or for accessing the functions.
+- Using this I realised that the line ```if (vaultDoor.checkPassword(input)) {``` is just a way of calling the function, I moved on to understand the function.
+- In the function I realised that we first take a password that has to be 32 characters long, and then this password has to match the final string, the `s.equals(...)` part to ensure that we get the return value as 1 and hence access granted. I also learned that `charAt()` gives the character of the string at a particular specified index
+- I solved this on pen and paper as shown below:
+  ![image of pen and paper solve]
+- Solving this, I got the flag.
+
+## Flag
+`picoCTF{jU5t_a_s1mpl3_an4gr4m_4_u_c79a21}`
+
+## What I learned 
+#### JavaScript Behaviour
+I learned about how js works and what is the `.` operator in it and how we can use it. 
+
+#### Logic Practice 
+The reverse building of the password from the buffer turned out to be a nice test for my mental faculties and allowed me to refresh my brain. 
+
+## References 
+- https://play.picoctf.org/practice?category=3&page=1&search=Vault%20Door
+- https://www.w3schools.com/java/ref_string_charat.asp
+- https://www.w3schools.com/java/java_intro.asp
+----------------------------------------------------------------------------------------------------------------------------------
