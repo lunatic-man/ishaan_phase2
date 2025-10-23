@@ -1,4 +1,4 @@
-# 1. GDB baby step 1 
+# GDB baby step 1 
 To solve this challenge, we need to find the value that the program stores in the `eax` register at the end of `main` function. 
 
 ## Solution 1 
@@ -112,4 +112,103 @@ I learned how we can use the IDA tool for directly debugging and getting the res
 - https://my.hex-rays.com/dashboard/download-center/installers/release/9.2/ida-free
 - https://www.rapidtables.com/convert/number/hex-to-decimal.html?x=86342
 ----------------------------------------------------------------------------------------------------------------------------------
+# ARMssembly 1 
+In this challenge, we needed to find out the process that the program does and then figure out what argument would allow us to win this program. 
 
+## Solution 
+
+To solve this challenge, I followed the steps as listed below: 
+- I first read the challenge statement and downloaded the file which was mentioned there. On downloading and using `file` command to figure out what type of file it is, I learned that it was a simple ASCII text.
+- Because of it being a simple ASCII text, I used to `cat` command to find the contents of the file only to realise it is anything but simple, and that the assembler source that I saw before ASCII text meant something.
+
+```bash
+
+12:42:00 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → ls
+chall_1.S
+12:42:00 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → file chall_1.S
+chall_1.S: assembler source, ASCII text
+12:42:08 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → cat chall_1.S
+	.arch armv8-a
+	.file	"chall_1.c"
+	.text
+	.align	2
+	.global	func
+	.type	func, %function
+func:
+	sub	sp, sp, #32
+	str	w0, [sp, 12]
+	mov	w0, 79
+	str	w0, [sp, 16]
+	mov	w0, 7
+	str	w0, [sp, 20]
+	mov	w0, 3
+	str	w0, [sp, 24]
+	ldr	w0, [sp, 20]
+	ldr	w1, [sp, 16]
+	lsl	w0, w1, w0
+	str	w0, [sp, 28]
+	ldr	w1, [sp, 28]
+	ldr	w0, [sp, 24]
+	sdiv	w0, w1, w0
+	str	w0, [sp, 28]
+	ldr	w1, [sp, 28]
+	ldr	w0, [sp, 12]
+	sub	w0, w1, w0
+	str	w0, [sp, 28]
+	ldr	w0, [sp, 28]
+	add	sp, sp, 32
+	ret
+	.size	func, .-func
+	.section	.rodata
+	.align	3
+.LC0:
+	.string	"You win!"
+	.align	3
+.LC1:
+	.string	"You Lose :("
+	.text
+	.align	2
+	.global	main
+	.type	main, %function
+main:
+	stp	x29, x30, [sp, -48]!
+	add	x29, sp, 0
+	str	w0, [x29, 28]
+	str	x1, [x29, 16]
+	ldr	x0, [x29, 16]
+	add	x0, x0, 8
+	ldr	x0, [x0]
+	bl	atoi
+	str	w0, [x29, 44]
+	ldr	w0, [x29, 44]
+	bl	func
+	cmp	w0, 0
+	bne	.L4
+	adrp	x0, .LC0
+	add	x0, x0, :lo12:.LC0
+	bl	puts
+	b	.L6
+.L4:
+	adrp	x0, .LC1
+	add	x0, x0, :lo12:.LC1
+	bl	puts
+.L6:
+	nop
+	ldp	x29, x30, [sp], 48
+	ret
+	.size	main, .-main
+	.ident	"GCC: (Ubuntu/Linaro 7.5.0-3ubuntu1~18.04) 7.5.0"
+	.section	.note.GNU-stack,"",@progbits
+12:42:14 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  →
+
+```
+- Now I figured out that this is assembly code, but I was not able to understand what it means at all. So I went through the videos given in the PDF to understand what it is about, and I was still pretty confused.
+- I did learn a few things from the videos, mainly `main` is where our actual code is, `func` is just a function that we define and use and `bl` is how we call a function. I also learned that `atoi` is a function that converts the text we entered as ASCII into Int for calculations.
+- Drawing on experiences and lessons from the previous challenge, I knew that we had to learn how to manipulate registers. However I was not able to find the typical `eax` format in this code which I had in the previous code. So I went online and googled about the `w0` , `x1` etc, which I assumed were registers as the videos taught that much.
+![Image of Google Search of w0,w1,x0,x1]()
+- Now after understanding that these are also registers, I learned what are the commands here and what do they do. Learning the assembly code was one of the toughest things I have ever done, and I will be honest, I am still confused about it.
+- I will try my best to explain each line here based on my understanding. First of all, there is something called as registers which are fast storage units, but volatile, that we use to store data. Assembly teaches us how to manipulate the data in these.
+- These registers are represented by `w0` or `x0` or `eax`. The first two notations are used to access different parts of register `0`. `w` is used to access the lower 32 bits, whereas `x` is used to access all 64 bits of a register. The `eax` is just another way of accessing the registers, however it points to a specific register, and `e` here denotes 32 bit architecture.
+- Now in these registers, we can store and manipulate data. To do this, we use mnemonic commands, like `str`, `ldr`, `add`, `sub`, etc.
+- These things together make up an assembly code. Coming back to the code that we got, this code starts at `func` as denoted by the line `.global func`. I do not know what other lines mean.
+- Now coming to `main` block as explained in video, we can see that we first use the `stp` command along with `x29` and `x30` registers. This instruction is a Store Pair instruction. It stores two registers to a location in memory. This location in memory is given by `[sp, -48]!`. What this does is it stores `x29` and `x30` registers in the address pointed to by `sp` register, at an offset of -48. 
