@@ -4,7 +4,7 @@ In this challenge, we first need to extract the data from a `.pcapng` file, then
 ## Solution 
 This was easily one of the biggest challenge I have ever solved and it felt like a miniCTF of its own. To solve this, I followed the steps as listed below: 
 - Seeing that it was a `.pcapng` extension, I simply put it in Wireshark and first read the protocol heirarchy and then extracted all the objects from the captured packets. I knew how to do this beforehand as I had read a bit about cybersecurity on TryHackMe.
-![Protocol Hierarchy image]
+![Protocol Hierarchy image](/images/forensics/Screenshot-2025-10-24-18-28-10.png)
 - After extracting the data from wireshark, I saw a few new files which are shown below:
 ```bash
 11:47:05 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → ls
@@ -27,7 +27,7 @@ tftp.pcapng:      pcapng capture file - version 1.0
 GSGCQBRFAGRAPELCGBHEGENSSVPFBJRZHFGQVFTHVFRBHESYNTGENAFSRE.SVTHERBHGNJNLGBUVQRGURSYNTNAQVJVYYPURPXONPXSBEGURCYNA
 11:52:51 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → 
 ```
-![image of cyberchef.io on ROT13]
+![image of cyberchef.io on ROT13](/images/forensics/Screenshot-2025-10-24-18-25-06.png)
 
 - This told me to read the `plan` file which again turned out to be a ROT13. Decoding it told me that I need to check the images.
 - Now using the `file` command on the images, I could see that there was a mismatch in `imagesize` and `cBsize` properties:
@@ -39,7 +39,7 @@ picture3.bmp: PC bitmap, Windows 3.x format, 807 x 605 x 24, image size 1466520,
 11:58:10 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → 
 ```
 - This was in line with the hint given in `plan`. However here I got confused, and I had to go online and google what is `.bmp` extension. This taught me that `.bmp` stands for bitmap and was developed by Windows.
-![image of google search of what is .bmp]
+![image of Wiki Search of what is .bmp](/images/forensics/Screenshot-2025-10-24-18-23-13.png)
 - Now here I was stuck, and actually went on a tangent, which is mentioned in notes. I completely forgot there was something called as `program.deb` as well which we managed to extract. So reading the file properties of this, I learned that this a debian package, extracting it using the `ar` command, I got two new archives, `control.tar.gz` and `data.tar.xz`
 ```bash
 12:18:06 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → file * 
@@ -178,4 +178,30 @@ I cannot really say this was a revision as it was me doing steganography on my o
 - https://play.picoctf.org/practice?category=4&page=1&search=Trivial
 - https://cyberchef.io/
 - General Google searches which are included as pictures.
+----------------------------------------------------------------------------------------------------------------------------------
+# tunn3l_v1s10n
+
+----------------------------------------------------------------------------------------------------------------------------------
+# m00nwalk 
+To solve this challenge, we needed to figure out in what format the audio message is being transmitted as to get the photo. 
+
+## Solution 
+This was one of the easier challenges in the JTP-2, as this had straight hints. To solve this I followed the steps as listed below: 
+- I first downloaded the audio file to hear it once, and on hearing it I realised that I had no clue in what format this was. Hence I went back to the challenge and read the hint to learn that this is actually the same format that Apollo 11 astronauts used to send back images. This was quite fascinating to learn as I never knew about this and I was amazed to learn that we could send images in the audio format.
+- Googling and reading up on Quora, I got to know that this was the audio format of SSTV, i.e., Slow-Scan Television. Then I went online and googled SSTV decoders to find the decoder. Uploading the file to the decoder, I got the image which had the flag.
+![image of online sstv decoder](/images/forensics/Screenshot-2025-10-24-18-20-32.png)
+
+## Flag
+`picoCTF{beep_boop_im_in_space}` 
+
+## Concepts learned
+
+#### Existence of SSTV
+I learned about the existence of something know as SSTV and I was very fascinated to learn about this. It really shows that when faced with problems, humans always find a way to get the job done. 
+
+## References
+- https://play.picoctf.org/practice?category=4&page=1&search=m00n
+- https://www.quora.com/How-were-cameras-in-space-for-moon-landing-broadcasts-sent-back-to-Earth
+- https://en.wikipedia.org/wiki/Slow-scan_television
+- https://sstv-decoder.mathieurenaud.fr/
 ----------------------------------------------------------------------------------------------------------------------------------
