@@ -230,7 +230,7 @@ tunn3l_v1s10n: data
 
 ```
 - Now in this data, I had no clue what the magic bytes meant, I vaguely remembed that starting with `89...` was a PNG image, so I put the first 4 bytes into google search.
-![image of google search of 4242 8e26]
+![image of google search of 424d 8e26](/images/forensics/Screenshot-2025-10-25-01-04-49.png)
 - This search actually showed the first link as a website which had a walkthrough of the challenge, so I decided to not visit that site and look up the second link, which was a type of a git repo.
 - On visiting the git repo, I learned that `424d` denotes a bmp image. So working on this principle I tried reading through the next bytes. I realised on reading the 11-12 byte that it literally spelled `bad0`. I got suspicious that it was not supposed to be this way. So I googled up how headers of a bmp are supposed to look like. Luckily I found a website which explained the headers very well.
 - I realised that these `bad0` headers had to be changed to `3e00` and `2800`. To do this, I first created a file which had only the hex data, nothing else, as shown before:
@@ -247,11 +247,11 @@ tunn3l_v1s10n: data
 19:32:14 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → xxd -r -p correct_hex > image
 ```
 - Opening the image I got the image as shown
-![image of notaflag{sorry}]()
+![image of notaflag{sorry}](/images/forensics/Screenshot-2025-10-25-01-06-41.png)
 - This was both relieving as well as annoying. So I re-read the name of the challenge, seeing that whenever I get stuck, the name provides a hint.
 - To tunnel vision, along with the weird sizing of the image told me that I had to resize the image. I assumed that it was incomplete along the height as having height less that width just felt wrong, so I copied the bytes of the width of image and used it to set the height in the hexdump.
 - This gave me a result like this:
-![]
+![image of final photo with flag](/images/forensics/Screenshot-2025-10-25-01-08-19.png)
 - As we can see, I got the flag at the top of the image.
 
 ## Flag
