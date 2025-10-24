@@ -180,7 +180,99 @@ I cannot really say this was a revision as it was me doing steganography on my o
 - General Google searches which are included as pictures.
 ----------------------------------------------------------------------------------------------------------------------------------
 # tunn3l_v1s10n
+In this challenge, we had to first figure out what data we have, then figure out how to reconstruct the data, then resize it to get the final answer.
 
+## Solution 
+To solve this challenge, I followed the steps as listed below: 
+- I first ran the `file` command on the downloaded data to figure out what data format we have, however it returned just data as result to us. 
+```bash
+19:14:32 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → file tunn*
+tunn3l_v1s10n: data
+19:14:36 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → 
+```
+- I did go on a tangent after reading the hint, as mentioned in the notes. But I realised it was not a very fruitful one. I had to go back to analyze the data again and try to find some hint as to what it was. So I ran the `cat` command. This gave me the result as random binary data. So I ran the `xxd` command to convert the binary to a hexdump. After converting it to the hexdump, I also got the idea of magic bytes/headers from a previous challenge that I had solved.
+```bash
+19:17:55 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → xxd tunn* | more
+00000000: 424d 8e26 2c00 0000 0000 bad0 0000 bad0  BM.&,...........
+00000010: 0000 6e04 0000 3201 0000 0100 1800 0000  ..n...2.........
+00000020: 0000 5826 2c00 2516 0000 2516 0000 0000  ..X&,.%...%.....
+00000030: 0000 0000 0000 231a 1727 1e1b 2920 1d2a  ......#..'..) .*
+00000040: 211e 261d 1a31 2825 352c 2933 2a27 382f  !.&..1(%5,)3*'8/
+00000050: 2c2f 2623 332a 262d 2420 3b32 2e32 2925  ,/&#3*&-$ ;2.2)%
+00000060: 3027 2333 2a26 382c 2836 2b27 392d 2b2f  0'#3*&8,(6+'9-+/
+00000070: 2623 1d12 0e23 1711 2916 0e55 3d31 9776  &#...#..)..U=1.v
+00000080: 668b 6652 996d 569e 7058 9e6f 549c 6f54  f.fR.mV.pX.oT.oT
+00000090: ab7e 63ba 8c6d bd8a 69c8 9771 c193 71c1  .~c..m..i..q..q.
+000000a0: 9774 c194 73c0 9372 c08f 6fbd 8e6e ba8d  .t..s..r..o..n..
+000000b0: 6bb7 8d6a b085 64a0 7455 a377 5a98 6f56  k..j..d.tU.wZ.oV
+000000c0: 7652 3a71 523d 6c4f 406d 5244 6e53 4977  vR:qR=lO@mRDnSIw
+000000d0: 5e54 5339 3370 5852 7661 5973 5f54 7e6b  ^TS93pXRvaYs_T~k
+000000e0: 5e86 7463 7e6a 5976 6250 765e 4c7a 6250  ^.tc~jYvbPv^LzbP
+000000f0: 876d 5d83 6959 8d73 639b 8171 9e84 7498  .m].iY.sc..q..t.
+00000100: 7e6e 9b81 718d 7363 735a 4a70 5747 5a41  ~n..q.scsZJpWGZA
+00000110: 314f 3626 4e37 274f 3828 4f38 2851 3a2a  1O6&N7'O8(O8(Q:*
+00000120: 5039 294f 3829 4b35 2950 3a2f 4b35 2a3f  P9)O8)K5)P:/K5*?
+00000130: 291e 422e 234b 372c 4531 263f 2b20 432f  ).B.#K7,E1&?+ C/
+00000140: 2443 2f24 402a 1f48 3227 4b32 2847 2e24  $C/$@*.H2'K2(G.$
+00000150: 4027 1d45 2c22 4c34 284c 3428 4b33 274a  @'.E,"L4(L4(K3'J
+00000160: 3226 4c32 244e 3426 5035 2752 3729 5336  2&L2$N4&P5'R7)S6
+00000170: 2855 382a 4b30 225d 4234 6349 3949 2f1f  (U8*K0"]B4cI9I/.
+00000180: 442b 1b4d 3424 4d36 274a 3324 462c 2048  D+.M4$M6'J3$F, H
+00000190: 2e22 462e 2244 2e22 3c26 1b32 2015 301f  ."F."D."<&.2 .0.
+000001a0: 1632 231a 3627 1e3c 2b22 3e2b 2442 2c26  .2#.6'.<+">+$B,&
+000001b0: 5e44 3e66 4c46 361d 1933 1f1a 3f30 2d13  ^D>fLF6..3..?0-.
+000001c0: 0a06 0906 0205 0400 0a05 040b 0605 0d05  ................
+000001d0: 050b 0605 0a06 0508 0605 0806 050a 0605  ................
+000001e0: 0d05 050d 0505 0b03 0406 0001 0500 0009  ................
+000001f0: 0403 0b06 030a 0502 0805 0109 0602 0906  ................
+00000200: 0207 0400 0704 0008 0501 0804 0306 0201  ................
+19:18:16 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → 
+
+```
+- Now in this data, I had no clue what the magic bytes meant, I vaguely remembed that starting with `89...` was a PNG image, so I put the first 4 bytes into google search.
+![image of google search of 4242 8e26]
+- This search actually showed the first link as a website which had a walkthrough of the challenge, so I decided to not visit that site and look up the second link, which was a type of a git repo.
+- On visiting the git repo, I learned that `424d` denotes a bmp image. So working on this principle I tried reading through the next bytes. I realised on reading the 11-12 byte that it literally spelled `bad0`. I got suspicious that it was not supposed to be this way. So I googled up how headers of a bmp are supposed to look like. Luckily I found a website which explained the headers very well.
+- I realised that these `bad0` headers had to be changed to `3e00` and `2800`. To do this, I first created a file which had only the hex data, nothing else, as shown before:
+```bash
+19:28:05 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → xxd tunn* | cut -d " " -f 2-9 > hexdumpTunnel
+19:29:24 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → nano hexdumpTunnel
+19:29:39 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → 
+```
+- On accessing the `hexdumpTunnel` using the nano editor, I changed the bytes as mentioned.
+- Then on removing the extra spaces and newline characters present in the file, I created a file. Then reversing that hexdump to get the output of binary to a file, I got an image.
+```bash
+19:29:39 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → nano hexdumpTunnel
+19:31:31 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → cat hexdumpTunnel | tr -d " " | tr -d "\n" > correct_hex
+19:32:14 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → xxd -r -p correct_hex > image
+```
+- Opening the image I got the image as shown
+![image of notaflag{sorry}]()
+- This was both relieving as well as annoying. So I re-read the name of the challenge, seeing that whenever I get stuck, the name provides a hint.
+- To tunnel vision, along with the weird sizing of the image told me that I had to resize the image. I assumed that it was incomplete along the height as having height less that width just felt wrong, so I copied the bytes of the width of image and used it to set the height in the hexdump.
+- This gave me a result like this:
+![]
+- As we can see, I got the flag at the top of the image.
+
+## Flag
+
+`picoCTF{qu1t3_a_v13w_2020}`
+
+## Notes
+In this when I first assumed the hint given as 'Weird that it wont display right...' I assumed we needed to find only the strings in this case, so I used the `strings` command to find human readable characters and then started removing all the extra symbols, because I assumed it also had a ROT type cipher as I had solved it in the previous challenge. I realised it wasnt the right path because even strings were very large in number, i.e., 65536+. Now I know not to have preconceived notions as it damages more than anything else. 
+
+## What I learned 
+
+#### Revision of magic bytes
+I knew about the existence of magic bytes because of a previous challenge, so solving this challenge reitrated the importance of the Header Bytes, especially in digital forensics.
+
+#### Header Manipulation 
+This is a concept that I had an insight into, but was ever comfortable with trying as I always thought I would corrupt the files, but doing and solving this challenge by changing these bytes in the text editor helped me gain confidence that I can manipulate data directly at hex level. 
+
+## References 
+- https://play.picoctf.org/practice/challenge/112?category=4&page=1&search=tunn
+- https://www.donwalizerjr.com/understanding-bmp/
+- https://gist.github.com/leommoore/f9e57ba2aa4bf197ebc5
 ----------------------------------------------------------------------------------------------------------------------------------
 # m00nwalk 
 To solve this challenge, we needed to figure out in what format the audio message is being transmitted as to get the photo. 
