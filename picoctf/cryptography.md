@@ -1,3 +1,85 @@
+# RSA_Oracle
+In this challenge, we were given two input files and we had to find out the message hidden in the `secret.enc` file. 
+
+## Solution 
+To solve this challenge, I followed the steps as given below: 
+- This challenge took a long while to solve as I had to understand how the RSA worked, and how exactly did the Chose Plaintext Attack method work.
+- I went to youtube and I learned how these encryptions worked and I did go on a tangent which is mentioned in notes. Approaching my mentor I got the idea to go deeper into CPA.
+- Learning about CPA, I realised that we could generate the password for a random digit, multiply the ciphertext with the ciphertext of the random digit, and then decrypt the ciphertext to get the final value. It was confusing but I will elaborate each step here.
+- First we pick a number of our choosing, I chose 2 because of its simplicity, but you can choose any number. Doing this, I encrypted the number to get a ciphertext.
+- I then multiplied this ciphertext with the `password.enc` ciphertext. This gave me a new ciphertext, let's call it final ciphertext.
+- Putting this ciphertext into the decryption oracle, I got a hex value. Now this hex value is 2 * password(in some format).
+- So I converted this hex value back into decimal so that I could remove the 2. After removing the 2, I got a decimal number.
+- Taking this decimal number, I converted it to Hex, and then converting this hex back to ASCII, I got the password.
+- This was done using a script, which is shown below:
+```bash
+11:19:01 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~  → nano exploit.py
+  GNU nano 7.2                                                   exploit.py                                                            
+#!/usr/bin/env python3
+from pwn import *
+
+target = remote('titan.picoctf.net', 54224)
+data = target.recvuntil('decrypt.')
+print(data.decode())
+
+input = (b'E') + (b'\n')
+target.send(input)
+
+data = target.recvuntil('keysize):')
+print(data.decode())
+
+input = p8(0x02) + (b'\n')
+target.send(input)
+data = target.recvuntil('ciphertext (m ^ e mod n)')
+data = target.recvline()
+result=int(data.decode())*176503704976404772434811463447365873483049085206606134568691636565861819498109721675092942173481291168043464>
+
+data = target.recvuntil('decrypt.')
+print(data.decode())
+input = (b'D') + (b'\n')
+target.send(input)
+
+data = target.recvuntil('decrypt:')
+print(data.decode())
+target.send(str(result)+'\n')
+
+data = target.recvuntil('hex (c ^ d mod n):')
+print(data.decode())
+data = target.recvline()
+print(data.decode())
+
+
+^G Help         ^O Write Out    ^W Where Is     ^K Cut          ^T Execute      ^C Location     M-U Undo        M-A Set Mark
+^X Exit         ^R Read File    ^\ Replace      ^U Paste        ^J Justify      ^/ Go To Line   M-E Redo        M-6 Copy
+```
+- The conversion of Hex to Decimal, then removing 2 from Decimal, then converting Decimal to Hex, and finally Hex to ASCII was done using online tools. This gave me the password as  `881d9`
+![image of final conversion of Hex to ASCII](/images/cryptography/Screenshot-2025-10-29-11-40-38.png)
+
+- Now this was half of the challenge, the second half was using this password to decrpt the secret.enc.
+- Using the hint provided in the challenge, I crafted a command, `openssl enc -aes-256-cbc -d -in secret.enc -k 881d9` to get the final flag.
+```bash
+11:31:14 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → openssl enc -aes-256-cbc -d -in secret.enc -k 881d9
+*** WARNING : deprecated key derivation used.
+Using -iter or -pbkdf2 would be better.
+picoCTF{su((3ss_(r@ck1ng_r3@_881d93b6}11:31:15 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads  → 
+
+````
+
+## Flag
+
+`picoCTF{su((3ss_(r@ck1ng_r3@_881d93b6}` 
+
+## Notes 
+The tangent I went on was assuming that we could use a wordlist to crack the password. Not really sure if it is feasible or not, but some research has told me it is not doable. Not entirely convinced so will go deeper down this rabbit hole to figure it out.
+
+## References
+- https://www.youtube.com/watch?v=cC8kKIvve-M
+- https://www.youtube.com/watch?v=wwkhSL5QWQc
+- https://play.picoctf.org/practice/challenge/422?category=2&page=1&search=Oracle
+----------------------------------------------------------------------------------------------------------------------------------
+# Custom Encryption
+
+----------------------------------------------------------------------------------------------------------------------------------
 # miniRSA
 To solve this challenge, we had to decrypt the algorithm and get the flag. 
 
