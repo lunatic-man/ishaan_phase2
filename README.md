@@ -23,3 +23,8 @@ Writeups must include:
 Important note:
 - Should include textual outputs and screenshots for everything
 - Usage of LLMs is banned
+
+
+# Image of Dashboard
+
+![Image of Dashboard](/images/dashboardPicoCTF.png)
