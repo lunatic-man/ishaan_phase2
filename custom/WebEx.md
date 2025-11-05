@@ -6,7 +6,7 @@ In this challenge, we had to look around a database and try to gain access to ad
 ### Solution 
 To solve this challenge, I followed the steps as given below: 
 - I first opened the google drive to find the link and open the login page. This was pretty similar to a challenge we had solved in Citadel-CTF.
-- Using similar reasoning, I logging in without facing much issues.
+- Using similar reasoning, I logged in without facing much issues.
 ![Image of Login page with `' OR 1=1 --`](/images/custom/WebEx/Screenshot-2025-11-05-19-40-06.png)
 - After logging in, I looked around to see that Drake was telling me that someone from management has the passcode. Again using similar logic that I used in Citadel, I set `OFFSET` to find the person with the password so I could acess Admin Area
 ![Image of Searching name with `' OR 1=1 LIMIT 4 OFFSET 10 --`](/images/custom/WebEx/Screenshot-2025-11-05-19-41-58.png)
