@@ -27,7 +27,7 @@ To solve this challenge, I followed the steps as listed below:
   }
 ```
 - This code here only checks the first value in the array, and we had already set this to fail, meaning `bVar2` is false, not true.
-- Following the logic in the code as given ahead, we first enter the `sayHello()` function, and thereafter we enter the `printFlag()` which gives us the flag.
+- Following the logic in the code, we first enter the `sayHello()` function, and thereafter we enter the `printFlag()` which gives us the flag.
 ```bash
 11:53:25 ishaan-mishra@ishaan-mishra-Lenovo-G505s ~/Downloads/src  → nc immadeveloper.nitephase.live 61234
 Hi I'm sudonymouse!
@@ -56,7 +56,8 @@ From this challenge, I got a brief intro C++, and some very basic understanding 
 
 
 ### Notes
-- I actually think there is another complicated way of solving this, and to do that we need to manipulate the addresses that return, however it was too vast and expansive for me to understand in one go. I learned something about Canary and whether instruction written in stack are executable or not and all that.
+- I actually think there is another complicated way of solving this, and to do that we need to manipulate the addresses that return, however it was too vast and expansive for me to understand in one go. I learned something about Canary and whether instruction written in stack are executable or not.
+
 
 ### References
 - https://drive.google.com/drive/u/0/folders/16O68-jD2Vhyfwpcf6zaspXlo7LgtKo9E?ths=true
