@@ -153,7 +153,7 @@ $  [3]  + 18889 suspended (signal)  python3 solve.py
 This was the first challenge I solved after EndSems, so this served as a really good revision for all I knew and learned. I learned about using `cyclic` to generate offsets which was becoming a really annoying thing for me at times. Apart from that, I got more comfortable using GDB to gain various inputs and data. 
 
 ### Notes
-This challenge did take a long time as I was out of touch with the tools. But it is a great thing overall. 
+This challenge did take a long time as I was out of touch with the tools. Regardless, it was a great practice question.
 
 ### References 
 - https://r1ru.github.io/categories/binary-exploitation-101/
