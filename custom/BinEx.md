@@ -56,7 +56,7 @@ From this challenge, I got a brief intro C++, and some very basic understanding 
 
 
 ### Notes
-- I actually think there is another complicated way of solving this, and to do that we need to manipulate the addresses that return, however it was too vast and expansive for me to understand in one go. I learned something about Canary and whether instruction written in stack are executable or not.
+- I actually think there is another complicated way of solving this, and to do that we need to manipulate the addresses that return, however it was too vast and expansive for me to understand in one go. I learned about Canary and whether instruction written in stack are executable or not.
 
 
 ### References
