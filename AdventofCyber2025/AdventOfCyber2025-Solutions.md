@@ -1,8 +1,8 @@
 <h1 style="text-align:center">
 ADVENT OF CYBER 2025 
 </h1>
-------------------------------------------------------------------------------------------------------------------------------------------
-## Day 0: Advent of Cyber Prep Track
+---------------------------------------------------------------------------------------------------------------------------
+<h2> Day 0: Advent of Cyber Prep Track </h2>
 On this day, we were taught about how to use the TryHackMe platform and we were also taught the basics of the various things related to cybersecurity that we will be learning about.
 
 ### Challenge 1 - Password Pandemonium 
