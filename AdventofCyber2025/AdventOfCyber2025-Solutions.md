@@ -146,6 +146,10 @@ cd .bash_history
 less .bash_history
 
 ```
+### Flags 
+- `THM{learning-linux-cli}`
+- `THM{sir-carrotbane-attacks}`
+- `THM{until-we-meet-again}`
 
 ### What I learned 
 These were pretty simple challenges and the walk throughs made it even simpler. This basically served as a revision. 
