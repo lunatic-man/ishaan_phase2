@@ -1,4 +1,4 @@
-<div align='center'># ADVENT OF CYBER 2025</div> 
+<center># ADVENT OF CYBER 2025</center> 
 ------------------------------------------------------------------------------------------------------------------------------------------
 ## Day 0: Advent of Cyber Prep Track
 On this day, we were taught about how to use the TryHackMe platform and we were also taught the basics of the various things related to cybersecurity that we will be learning about.
