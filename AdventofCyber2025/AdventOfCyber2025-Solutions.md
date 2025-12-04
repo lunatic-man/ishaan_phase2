@@ -157,3 +157,25 @@ These were pretty simple challenges and the walk throughs made it even simpler. 
 N/A
 ### References
 N/A
+----------------------------------------------------------------------------------------------------------------------------------
+## Day 2: Phishing - Merry Clickmas
+The challenge for this day was using social engineering to be able to target a particular user in the Factory and get their password. 
+
+### Solution 
+To solve this challenge, I followed the steps as given below: 
+- I read through the theory given to us to learn and understand what social engineering actually is. I learned that Social engineering relies on the human aspect of any machine. What I mean by this is that ever machine needs a human to operate it, more or less, and if we can play psychological tricks on the human being, we can trick them into giving us their credentials.
+- We focused on a special part of Social Engineering, called as the Phising attack. Here the communication medium is mostly messages, with a few new variants having videos or other things as the transmission mode. From here, we were mostly taught how to successfully work on the setup of a trap for a victim, how to write convincing emails, and we were taught about the Social Engineering ToolKit by David Kennedy.
+- Following the steps given along the challenge, I first started the server using the script they had given to us. After that I went on to write an email to the factory workers to get their password. After sending the email, I simply waited for the password to appear on my server. On getting the password, I logged into the mail account to access private information.
+
+### Flag 
+- `unranked-wisdom-anthem` (password captured after Phising)
+
+### What I learned
+This was the first exposure to the world of Social Engineering, which turned out to be very fun and satisfying. I learned how easy it can be to get someone's password, and I will now be more vigilant when accessing any links.
+
+### Notes
+N/A
+
+### References
+N/A
+--------------------------------------------------------------------------------------------------------------------------------
