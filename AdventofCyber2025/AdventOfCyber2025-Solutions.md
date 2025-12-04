@@ -157,6 +157,7 @@ These were pretty simple challenges and the walk throughs made it even simpler. 
 N/A
 ### References
 N/A
+
 ----------------------------------------------------------------------------------------------------------------------------------
 ## Day 2: Phishing - Merry Clickmas
 The challenge for this day was using social engineering to be able to target a particular user in the Factory and get their password. 
